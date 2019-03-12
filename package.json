@@ -1,6 +1,6 @@
 {
   "name": "react-native-dev-treeview",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -19,5 +19,8 @@
   "bugs": {
     "url": "https://github.com/SniperAK/react-native-dev-tree-view/issues"
   },
-  "homepage": "https://github.com/SniperAK/react-native-dev-tree-view#readme"
+  "homepage": "https://github.com/SniperAK/react-native-dev-tree-view#readme",
+  "dependencies": {
+    "react-native-triangle-view": "^1.0.0"
+  }
 }
