@@ -226,7 +226,6 @@ export default class TreeView extends Component {
       shouldUpdate:false,
     };
     this.props.autoExtendRoot && this.state.root.toggle && this.state.root.toggle();
-    this.keyEvent = this.keyEvent.ubind(this,10);
   }
 
   assignToggle( d, r){
