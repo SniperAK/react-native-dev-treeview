@@ -1,3 +1,0 @@
-# React Native Deve TreeView
-
-writing on readme...

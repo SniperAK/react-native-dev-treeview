@@ -50,6 +50,10 @@ const styles = StyleSheet.create({
   typeFunction:     {color:'yellow'},
 });
 
+function toCapitalize( text ) {
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+}
+
 function VObject( value, parent, depth = 0, key = 'root' ) {
   let type = typeof value;
 
@@ -292,7 +296,7 @@ export default class TreeView extends Component {
     let isOpened = (desc.toggle && desc.toggleOn === true) ? true : false;
     let {fontSize, tailRenderer} = this.props;
     let {focusedDesc} = this.state;
-    let style = [styles['type' + desc.type.toCapitalize()],{fontSize}];
+    let style = [styles['type' + toCapitalize( desc.type )],{fontSize}];
 
     let length = '';
     if( desc.length >= 0 && desc.childName ){
