@@ -311,7 +311,7 @@ export default class TreeView extends Component {
           </View>
           {typeof desc.key !== 'undefined' && <Text style={[styles.v,{fontSize}]}>{desc.key + ': '}</Text>}
           <TouchableOpacity opacity={0.9} onPress={this.copy.bind(this,desc)}>
-            <Text style={[styles.v, style]}>{isOpened ? desc.container[0] : desc.desc}{length && ' ' + length}<Text style={styles.typeDesc}> {toCapitalize(desc.type}</Text></Text>
+            <Text style={[styles.v, style]}>{isOpened ? desc.container[0] : desc.desc}{length && ' ' + length}<Text style={styles.typeDesc}> {toCapitalize(desc.type)}</Text></Text>
           </TouchableOpacity>
           <TouchableOpacity opacity={0.9} onPress={this.consoleLog.bind(this,desc)}>
             <Text style={styles.typeDesc}> _</Text>
