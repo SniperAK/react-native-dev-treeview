@@ -1,0 +1,23 @@
+{
+  "name": "react-native-dev-treeview",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SniperAK/react-native-dev-tree-view.git"
+  },
+  "keywords": [
+    "react-native-treeview",
+    "react-native-dev-tree-view"
+  ],
+  "author": "SniperAK",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SniperAK/react-native-dev-tree-view/issues"
+  },
+  "homepage": "https://github.com/SniperAK/react-native-dev-tree-view#readme"
+}
