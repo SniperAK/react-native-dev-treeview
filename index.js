@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 
-import Triangle from 'react-native-trangle-view';
+import Triangle from 'react-native-triangle-view';
 
 const styles = StyleSheet.create({
   container:{
