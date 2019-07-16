@@ -88,7 +88,7 @@ function VObject( value, parent, depth = 0, key = 'root' ) {
     this.toggleOn = false;
   }
   else if( type == 'object' ) {
-    if( value.constructor == Array ){
+    if( value instanceof Array ){
       this.toggle   = ()=>{
         this.toggleOn = !this.toggleOn;
 
@@ -106,7 +106,7 @@ function VObject( value, parent, depth = 0, key = 'root' ) {
 
       this.length = Object.keys(value).length;
       this.desc   = '[...]';
-      this.type   = 'array';
+      this.type   = value.constructor.name;
       this.container  = ['[',']'];
       this.childName = 'item';
       this.toggleOn = false;
@@ -129,13 +129,13 @@ function VObject( value, parent, depth = 0, key = 'root' ) {
       };
 
       this.length = value.size;
-      this.desc   = 'Set {...}';
-      this.type   = 'set';
-      this.container  = ['Set {','}'];
+      this.desc   = `${value.constructor.name} {...}`;
+      this.type   = value.constructor.name;
+      this.container  = [`${value.constructor.name} {`,'}'];
       this.childName = 'item';
       this.toggleOn = false;
     }
-    else if( value.constructor === Map ) {
+    else if( value instanceof Map ) {
       this.toggle   = ()=>{
         this.toggleOn = !this.toggleOn;
 
@@ -153,13 +153,13 @@ function VObject( value, parent, depth = 0, key = 'root' ) {
       };
 
       this.length = value.size;
-      this.desc   = 'Map {...}';
-      this.type   = 'map';
-      this.container  = ['Map {','}'];
+      this.desc   = `${value.constructor.name} {...}`;
+      this.type   = value.constructor.name;
+      this.container  = [`${value.constructor.name} {`,'}'];
       this.childName = 'key';
       this.toggleOn = false;
     }
-    else if( value.constructor === Date ) {
+    else if( value instanceof Date ) {
       this.desc = value.format('yyyy-MM-dd HH:mm:ss');
       this.type = 'date';
     }
