@@ -1,7 +1,7 @@
 {
   "name": "react-native-dev-treeview",
-  "version": "1.1.2",
-  "description": "",
+  "version": "1.2.0",
+  "description": "React Native development support tools on the screen explorer value what you want.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

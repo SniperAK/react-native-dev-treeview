@@ -23,8 +23,23 @@ import DevTreeView from 'react-native-dev-treeview';
 
 ```
 
-- Changed Logs
-  - 1.1.2 : Container extended instance handle
+## Supportred data types
+- Object
+- Array
+- Map
+- Set
+- String
+- Number
+- String
+- Date
+- Boolean
+- Null
+- Undefined
 
-- Todo
-  - Anaysis object own properties
+## Changed Logs
+- 1.2.0 : Supported dynamically created getter 
+- 1.1.2 : Container extended instance handle
+
+## Todo
+- [ ] Anaysis object own properties
+- [x] Anaysis object own properties for dynamically using Object.defineProperty

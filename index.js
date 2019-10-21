@@ -48,13 +48,14 @@ const styles = StyleSheet.create({
   typeBoolean:      {color:'rgb(250,50,50)'},
   typeString:       {color:'rgb(50,200,50)'},
   typeFunction:     {color:'yellow'},
+  typeGet:          {color:'purple'},
 });
 
 function toCapitalize( text ) {
   return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 }
 
-function VObject( value, parent, depth = 0, key = 'root' ) {
+function VObject( value, parent, depth = 0, key = 'root', updateGetterChild = false ) {
   let type = typeof value;
 
   this.value = value;
@@ -63,7 +64,17 @@ function VObject( value, parent, depth = 0, key = 'root' ) {
   this.parent = parent;
   this.key = key;
 
-  if( type == 'undefined' ){
+  if( updateGetterChild ){
+    this.toggle   = ()=>{
+      let _object = new VObject( parent.value[key], parent, depth + 1, key );
+      updateGetterChild ( _object );
+    };
+    this.desc   = '(...)';
+    this.type   = 'get';
+    this.childName = 'value';
+    this.toggleOn = false;
+  }
+  else if( type == 'undefined' ){
     this.desc  = 'undefined';
     this.type   = 'undefined';
   }
@@ -73,7 +84,7 @@ function VObject( value, parent, depth = 0, key = 'root' ) {
   }
   else if( type == 'function') {
     this.desc  = 'function {...}';
-    this.container  = ['function {','}'];
+    this.container  = ['',''];
     this.type  = 'function';
     this.length = 1;
 
@@ -95,11 +106,7 @@ function VObject( value, parent, depth = 0, key = 'root' ) {
         if( !this.child ) {
           let prev = null;
           this.child = Object.keys(value).map( (k,i)=>{
-             let child = new VObject( value[k], this,  depth + 1, k );
-             child.prev = prev;
-             if( prev ) prev.next = child;
-             prev = child;
-             return child;
+             return new VObject( value[k], this,  depth + 1, k );
           });
         }
       };
@@ -119,11 +126,7 @@ function VObject( value, parent, depth = 0, key = 'root' ) {
           this.child = [];
           let prev = null;
           value.forEach( ( v, k )=>{
-            let child = new VObject( v, this, depth + 1, k );
-            child.prev = prev;
-            if( prev ) prev.next = child;
-            prev = child;
-            this.child.push( child );
+            this.child.push( new VObject( v, this, depth + 1, k ) );
           } );
         }
       };
@@ -143,11 +146,7 @@ function VObject( value, parent, depth = 0, key = 'root' ) {
           this.child = [];
           let prev = null;
           value.forEach( ( v, k )=>{
-            let child = new VObject( v, this, depth + 1,k );
-            child.prev = prev;
-            if( prev ) prev.next = child;
-            prev = child;
-            this.child.push( child )
+            this.child.push( new VObject( v, this, depth + 1,k ) );
           } );
         }
       };
@@ -169,13 +168,11 @@ function VObject( value, parent, depth = 0, key = 'root' ) {
 
         if( !this.child ) {
           let prev = null;
-          this.child = Object.keys( value ).map( k=> {
-            let child = new VObject( value[k], this, depth + 1, k);
-            child.prev = prev;
-            if( prev ) prev.next = child;
-            prev = child;
-
-            return child;
+          let properties = Object.getOwnPropertyDescriptors( value )
+          this.child = Object.keys( properties ).map( (k, i)=>{
+            return new VObject( value[k], this, depth + 1, k, typeof properties[k].get == 'function' ? ( object )=>{
+              this.child.splice(i, 1, object);
+            }:false)
           });
         }
       };
@@ -262,8 +259,10 @@ export default class TreeView extends Component {
   }
 
   extend( desc ){
+    console.log( desc , !!desc.toggle);
     desc.toggle && desc.toggle();
     this.setState({shouldUpdate:true,focusedDesc:desc},()=>{
+      console.log( 'didFinish extended ');
       this.props.onExtend( desc );
     });
   }
@@ -284,6 +283,15 @@ export default class TreeView extends Component {
       console.log(desc.path() + ' has been copied.')
     } catch( e ) {
       console.log(desc.path() + ' can not be copied for the following reasons: ' + e.toString())
+    }
+  }
+
+  _onPressDesc( desc ){
+    if( desc.type == 'get' ){
+      this.extend( desc );
+    }
+    else {
+      this.copy( desc ); 
     }
   }
 
@@ -310,12 +318,14 @@ export default class TreeView extends Component {
             {hasChild && <Triangle direction={desc.toggleOn?'up':'down'} width={fontSize * 0.5} height={this.props.fontSize*0.4}/>}
           </View>
           {typeof desc.key !== 'undefined' && <Text style={[styles.v,{fontSize}]}>{desc.key + ': '}</Text>}
-          <TouchableOpacity opacity={0.9} onPress={this.copy.bind(this,desc)}>
+          <TouchableOpacity opacity={0.9} onPress={this._onPressDesc.bind(this, desc )}>
             <Text style={[styles.v, style]}>{isOpened ? desc.container[0] : desc.desc}{length && ' ' + length}<Text style={styles.typeDesc}> {toCapitalize(desc.type)}</Text></Text>
           </TouchableOpacity>
-          <TouchableOpacity opacity={0.9} onPress={this.consoleLog.bind(this,desc)}>
-            <Text style={styles.typeDesc}> _</Text>
-          </TouchableOpacity>
+          {desc.type != 'get' && (
+            <TouchableOpacity opacity={0.9} onPress={this.consoleLog.bind(this,desc)}>
+              <Text style={styles.typeDesc}> _</Text>
+            </TouchableOpacity>
+          )}
           {tailRenderer && tailRenderer( desc, index, datas )}
         </TouchableOpacity>
         {isOpened && (
