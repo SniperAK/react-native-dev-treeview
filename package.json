@@ -1,6 +1,6 @@
 {
   "name": "react-native-dev-treeview",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "React Native development support tools on the screen explorer value what you want.",
   "main": "index.js",
   "scripts": {

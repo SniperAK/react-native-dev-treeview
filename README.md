@@ -8,13 +8,15 @@ Make objects are visualizated on screen.
 ## Installation
 
 - using npm
-  - $ npm i react-native-dev-treeview
+```
+$ npm i react-native-dev-treeview --save
+```
 
 
 ## How to use it
 
 ```
-import DevTreeView from 'react-native-dev-treeview';
+import TreeView from 'react-native-dev-treeview';
 
 ... 
 
@@ -37,6 +39,7 @@ import DevTreeView from 'react-native-dev-treeview';
 - Undefined
 
 ## Changed Logs
+- 1.2.1 : Fix miss typed example on readme
 - 1.2.0 : Supported dynamically created getter 
 - 1.1.2 : Container extended instance handle
 
