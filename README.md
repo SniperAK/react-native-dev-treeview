@@ -1,9 +1,19 @@
 # React Native Dev TreeView
-
 Pure javascript component that Tree View for debug on screen when development using react-native.
 Make objects are visualizated on screen.
 
 ![Alt text](https://github.com/SniperAK/react-native-dev-treeview/blob/master/example.png?raw=true "Title")
+
+# Change Logs
+> 1.3 
+>   - Change property for initial extend root 
+>   - Remove dependency react-native-triangle-view
+>   - Change extendsed indicator.
+>   - Assing fontSize property not affected descrption
+
+> 1.2 
+>   - Improve analysis object property that defiend after creation using Object.defineProperty
+
 
 ## Installation
 

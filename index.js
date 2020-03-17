@@ -7,8 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-
-import Triangle from 'react-native-triangle-view';
+import PropTypes from 'prop-types';
 
 const styles = StyleSheet.create({
   container:{
@@ -33,7 +32,6 @@ const styles = StyleSheet.create({
     backgroundColor:'rgba(255,255,255,0.01)',
   },
   typeDesc: {
-    fontSize:7,
     color:'#eeeeee44',
     fontWeight:'normal',
   },
@@ -55,7 +53,7 @@ function toCapitalize( text ) {
   return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
 }
 
-function VObject( value, parent, depth = 0, key = 'root', updateGetterChild = false ) {
+function VObject( value, parent, depth = 0, key = undefined, updateGetterChild = false ) {
   let type = typeof value;
 
   this.value = value;
@@ -213,20 +211,83 @@ function VObject( value, parent, depth = 0, key = 'root', updateGetterChild = fa
   return this;
 }
 
+class Arrow extends Component {
+  static defaultProps = {
+    color:'#ccc',
+    direction:'right',
+    width:6,
+    height:12,
+    borderWidth:2,
+  };
+
+  constructor( props ) {
+    super( props );
+    this.state = {
+
+    }
+  }
+
+  get direction(){
+    switch (this.props.direction ) {
+      case 'up': return '270deg';
+      case 'left': return '180deg';
+      case 'down': return '90deg';
+      case 'right':
+      default : return '0deg';
+    }
+  }
+
+  render(){
+    let {color, direction, width, height, borderWidth} = this.props;
+    let barWidth = Math.sqrt( Math.pow( (height - borderWidth) / 2, 2) + Math.pow( width ,2 ) );
+    let size = Math.max( width * 1.5, height* 1.5 );
+    return (
+      <View style={{width:size, height:size, alignItems:'center', justifyContent:'center'}}>
+        <View style={[{position:'relative', width:height, height, transform:[{rotate:this.direction}, {translateX:height/4}]}]}>
+          <View style={[{
+            position:'absolute',
+            backgroundColor:color, 
+            height:borderWidth, 
+            width:barWidth, 
+            transform:[{rotate:'45deg'}], 
+            top:width / 2 - borderWidth  / 4, 
+            left:-borderWidth,
+            borderRadius:borderWidth / 2 }
+          ]} />
+          <View style={[{
+            position:'absolute',
+            backgroundColor:color, 
+            height:borderWidth, 
+            width:barWidth, 
+            transform:[{rotate:'-45deg'}], 
+            bottom:width / 2 - borderWidth  / 4, 
+            left:-borderWidth,
+            borderRadius:borderWidth / 2} 
+          ]} />
+        </View>
+      </View>
+    )
+  }
+}
+
 export default class TreeView extends Component {
   static defaultProps = {
     fontSize:9,
-    autoExtendRoot:true,
-    onExtend:(object)=>{}
+    autoExtendRoot:false,
+    onExtend:(object)=>{}, 
+    logToConsole:false,
   }
 
   constructor( props ){
     super( props );
+    let {data, autoExtendRoot} = props;
+    let root = new VObject( data );
     this.state = {
-      root:new VObject( this.props.data ),
+      root,
       shouldUpdate:false,
     };
-    this.props.autoExtendRoot && this.state.root.toggle && this.state.root.toggle();
+    console.log( {autoExtendRoot, root});
+    if( autoExtendRoot && root.toggle ) root.toggle();
   }
 
   assignToggle( d, r){
@@ -242,9 +303,9 @@ export default class TreeView extends Component {
   componentWillReceiveProps( nextProps ){
     if( nextProps.data != this.props.data && nextProps.data ) {
       let root = new VObject(nextProps.data);
-      if( root && this.state.root ) this.assignToggle(root, this.state.root);
+      // if( root && this.state.root ) this.assignToggle(root, this.state.root);
       if( this.props.autoExtendRoot == false && nextProps.autoExtendRoot && root && root.toggle && root.toggleOn ) {
-        root.toggle();
+        // root.toggle();
       }
       this.setState({root});
     }
@@ -302,7 +363,7 @@ export default class TreeView extends Component {
   renderObject(desc, index, datas){
     let hasChild = desc.toggle && desc.length > 0;
     let isOpened = (desc.toggle && desc.toggleOn === true) ? true : false;
-    let {fontSize, tailRenderer} = this.props;
+    let {fontSize, tailRenderer, logToConsole} = this.props;
     let {focusedDesc} = this.state;
     let style = [styles['type' + toCapitalize( desc.type )],{fontSize}];
 
@@ -314,16 +375,18 @@ export default class TreeView extends Component {
     return (
       <View key={index + '_' + desc.depth}>
         <TouchableOpacity style={{flexDirection:'row',alignItems:'center'}} opacity={0.9} onPress={this.extend.bind(this, desc)}>
-          <View style={styles.toggleContainer}>
-            {hasChild && <Triangle direction={desc.toggleOn?'up':'down'} width={fontSize * 0.5} height={this.props.fontSize*0.4}/>}
-          </View>
+          {hasChild && (
+            <View style={[styles.toggleContainer, {width:fontSize, height:fontSize}]}>
+              <Arrow direction={desc.toggleOn?'up':'right'} width={fontSize*0.4} height={fontSize * 0.8} borderWidth={fontSize / 9}/>
+            </View>
+          )}
           {typeof desc.key !== 'undefined' && <Text style={[styles.v,{fontSize}]}>{desc.key + ': '}</Text>}
           <TouchableOpacity opacity={0.9} onPress={this._onPressDesc.bind(this, desc )}>
-            <Text style={[styles.v, style]}>{isOpened ? desc.container[0] : desc.desc}{length && ' ' + length}<Text style={styles.typeDesc}> {toCapitalize(desc.type)}</Text></Text>
+            <Text style={[styles.v, style]}>{isOpened ? desc.container[0] : desc.desc}{length && ' ' + length}<Text style={[styles.typeDesc,{fontSize:Math.max(7, fontSize - 2 )}]}> {toCapitalize(desc.type)}</Text></Text>
           </TouchableOpacity>
-          {desc.type != 'get' && (
+          {logToConsole && desc.type != 'get' && (
             <TouchableOpacity opacity={0.9} onPress={this.consoleLog.bind(this,desc)}>
-              <Text style={styles.typeDesc}> _</Text>
+              <Text style={[styles.typeDesc,{fontSize}]}> _</Text>
             </TouchableOpacity>
           )}
           {tailRenderer && tailRenderer( desc, index, datas )}
