@@ -13,10 +13,32 @@ export type ETypes =
   | 'boolean'
   | 'string'
   | 'function'
-  | 'get';
+  | 'getter';
+
+export type ETypesName =
+  | 'Object'
+  | 'Array'
+  | 'Set'
+  | 'Map'
+  | 'Date'
+  | 'Arguments'
+  | 'Undefined'
+  | 'Null'
+  | 'Number'
+  | 'Bigint'
+  | 'Symbol'
+  | 'Boolean'
+  | 'String'
+  | 'Function'
+  | 'Getter';
+
+function toCapitalize(text: string) : ETypesName{
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase() as ETypesName;
+}
 
 export default class VObject {
   type: ETypes;
+  typeName: ETypesName;
   value: any;
   desc: string;
   depth: number;
@@ -68,7 +90,8 @@ export default class VObject {
         return this.child;
       };
       this.desc = '( ... )';
-      this.type = 'get';
+      this.type = 'getter';
+      this.length = -1;
       this.childName = 'value';
       this.toggleOn = false;
     } else if (this.type === 'undefined') {
@@ -206,7 +229,7 @@ export default class VObject {
     this.lengthDescription = this.length >= 0 && this.childName
         ? ' ' + this.length + ' ' + (this.childName + (this.length > 1 ? 's' : ''))
         : '';
-    
+    this.typeName = toCapitalize(this.type);
   }
 
   path() {

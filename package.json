@@ -1,6 +1,6 @@
 {
   "name": "react-native-dev-treeview",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "React Native development support tools on the screen explorer value what you want.",
   "main": "lib/index.js",
   "module": "lib/index.js",
@@ -9,7 +9,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:src": "rm -rf ./lib && tsc -p src/tsconfig.json && babel lib --out-dir lib",
     "build": "npm run build:src",
-    "prepublish": "npm run build"
+    "prepublish": "npm run build",
+    "localinstall": "npm run build && cp -R ./lib ./example/node_modules/react-native-dev-treeview/"
   },
   "repository": {
     "type": "git",

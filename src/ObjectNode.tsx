@@ -26,28 +26,24 @@ const styles = StyleSheet.create({
     color: '#eeeeee44',
     fontWeight: 'normal',
   },
-  object: { color: 'silver' },
-  array: { color: 'silver' },
-  Set: { color: 'silver' },
-  Map: { color: 'silver' },
-  date: { color: 'deepskyblue' },
-  arguments: { color: 'yellow' },
-  undefined: { color: 'gray' },
-  null: { color: 'gray' },
-  symbol: { color: 'rgb(60,60,60)' },
-  bigint: { color: 'rgb(180,80,50)' },
-  number: { color: 'rgb(250,150,50)' },
-  boolean: { color: 'rgb(150,50,50)' },
-  string: { color: 'rgb(20,140,20)' },
-  function: { color: 'rgb(180,180,0)' },
-  get: { color: 'rgb(120,30,120)' },
+  Object: { color: 'silver' },
+  Array: { color: 'lightsteelblue' },
+  Set: { color: 'rebeccapurple' },
+  Map: { color: 'springgreen' },
+  Date: { color: 'deepskyblue' },
+  Arguments: { color: 'yellow' },
+  Undefined: { color: 'gray' },
+  Null: { color: 'darkgrey' },
+  Symbol: { color: 'rgb(60,60,60)' },
+  Bigint: { color: 'rgb(180,80,50)' },
+  Number: { color: 'rgb(250,150,50)' },
+  Boolean: { color: 'rgb(150,50,50)' },
+  String: { color: 'rgb(20,140,20)' },
+  Function: { color: 'goldenrod' },
+  Getter: { color: 'rgb(120,30,120)' },
 });
 
-function toCapitalize(text: string) {
-  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
-}
-
-export default function ObjectNode({ object }: { object: VObject }): React.ReactElement {
+export default function ObjectNode({ object, onNodeExtend }: { object: VObject, onNodeExtend?: (object: VObject) => void }): React.ReactElement {
   const { nodeStyle, fontSize, autoExtendRoot, onExtend, logToConsole, tailRenderer, onCopy } =
     React.useContext(TreeContext);
   const [childs, setChilds] = React.useState<VObject[] | undefined>();
@@ -63,9 +59,10 @@ export default function ObjectNode({ object }: { object: VObject }): React.React
 
   const extend = (target: VObject) => {
     setChilds((prev) => {
-      return prev ? undefined : target?.getChilds?.();
+      return prev ? undefined : [...(target?.getChilds?.() || [])];
     });
     onExtend?.(target);
+    onNodeExtend?.(target);
   };
 
   // const extendTo = (target?: VObject2, toDepth: number = -1) => {
@@ -88,7 +85,8 @@ export default function ObjectNode({ object }: { object: VObject }): React.React
   };
 
   const handlePressTarget = (target: VObject) => {
-    if (target.type === 'get') {
+    if (target.type === 'getter') {
+      console.log( 'handlePressTarget',target);
       extend(target);
     } else {
       handleCopy(target);
@@ -96,11 +94,15 @@ export default function ObjectNode({ object }: { object: VObject }): React.React
   };
 
   const consoleLog = (target: VObject) => {
-    console.log(target.value);
+    if (target.type === 'getter') {
+      console.log(target.value());
+    } else {
+      console.log(target.value);
+    }
   };
 
   const isOpened = object.hasChild && !!childs ? true : false;
-  const style = [styles[object.type], { fontSize }];
+  const style = [styles[object.typeName], { fontSize }];
 
   return (
     <View>
@@ -126,10 +128,10 @@ export default function ObjectNode({ object }: { object: VObject }): React.React
           <Text style={[styles.v, style]}>
             {isOpened ? object.container?.[0] : object.desc}
             {object.lengthDescription}
-            <Text style={[styles.typeDesc, { fontSize: Math.max(7, fontSize - 2) }]}> {toCapitalize(object.type)}</Text>
+            <Text style={[styles.typeDesc, { fontSize: Math.max(7, fontSize - 2) }]}> {object.typeName}</Text>
           </Text>
         </TouchableOpacity>
-        {logToConsole && object.type !== 'get' && (
+        {logToConsole && (
           <TouchableOpacity activeOpacity={0.9} onPress={() => consoleLog(object)}>
             <Text style={[styles.typeDesc, { fontSize }]}> _</Text>
           </TouchableOpacity>
@@ -138,7 +140,9 @@ export default function ObjectNode({ object }: { object: VObject }): React.React
       </TouchableOpacity>
       {isOpened && (
         <View style={[styles.childs, nodeStyle]}>
-          {childs && childs.map((c, i) => <ObjectNode key={i} object={c} />)}
+          {childs && childs.map((c, i) => <ObjectNode key={i} object={c} onNodeExtend={()=>{
+            setChilds(prev=>prev ? [...(object?.getChilds?.() || [])] : undefined);
+          }}/>)}
         </View>
       )}
       {isOpened && object.container?.[1] && (

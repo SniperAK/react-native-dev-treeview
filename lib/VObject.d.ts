@@ -1,7 +1,9 @@
 /// <reference types="react" />
-export declare type ETypes = 'object' | 'array' | 'Set' | 'Map' | 'date' | 'arguments' | 'undefined' | 'null' | 'number' | 'bigint' | 'symbol' | 'boolean' | 'string' | 'function' | 'get';
+export declare type ETypes = 'object' | 'array' | 'Set' | 'Map' | 'date' | 'arguments' | 'undefined' | 'null' | 'number' | 'bigint' | 'symbol' | 'boolean' | 'string' | 'function' | 'getter';
+export declare type ETypesName = 'Object' | 'Array' | 'Set' | 'Map' | 'Date' | 'Arguments' | 'Undefined' | 'Null' | 'Number' | 'Bigint' | 'Symbol' | 'Boolean' | 'String' | 'Function' | 'Getter';
 export default class VObject {
     type: ETypes;
+    typeName: ETypesName;
     value: any;
     desc: string;
     depth: number;
